@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: CLone repository
+      - name: Clone repository
         uses: actions/checkout@v4
 
       - name: Remove old goose (если он есть)
@@ -22,15 +22,20 @@ jobs:
           chmod +x goose
           ls -lah goose  # Проверка, скачался ли бинарник
 
+      - name: Add goose to PATH
+        run: |
+          echo "$(pwd)" >> $GITHUB_PATH
+          echo "Добавили $(pwd) в PATH"
+
       - name: Check if goose works
-        run: ./goose -h || echo "Goose не найден или не работает!"
+        run: goose -h || echo "Goose не найден или не работает!"
 
       - name: Проверяем скачался ли goose
         run: |
-          ls -lah goose
+          ls -lah
           file goose
-          ./goose -version || echo "goose не запускается!"
-
+          which goose || echo "goose не найден!"
+          goose -version || echo "goose не запускается!"
 
       - name: Apply migrations
         env:
