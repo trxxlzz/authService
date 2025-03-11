@@ -13,19 +13,19 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - name: Remove old goose (если он есть)
-        run: rm -f /usr/local/bin/goose || true
+      - name: Устанавливаем Go (для установки goose)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'  # Используем актуальную версию Go
 
-      - name: Download goose
+      - name: Устанавливаем goose
         run: |
-          curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o goose
-          chmod +x goose
-          mv goose /usr/local/bin/goose
+          go install github.com/pressly/goose/v3@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
-      - name: Проверяем скачался ли goose
+      - name: Проверяем установку goose
         run: |
-          ls -lah /usr/local/bin/goose
-          file /usr/local/bin/goose
+          which goose || echo "goose не найден!"
           goose -version || echo "goose не запускается!"
 
       - name: Apply migrations
@@ -37,5 +37,6 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
         run: |
           goose -dir=migrations postgres "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" up
+
 
 
