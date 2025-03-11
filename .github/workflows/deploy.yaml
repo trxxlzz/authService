@@ -18,7 +18,7 @@ jobs:
           curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o goose
           chmod +x goose
 
-      - name: Проверяем установку Goose
+      - name: Check if goose download
         run: which goose || echo "goose не найден"
 
 
