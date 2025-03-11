@@ -1,5 +1,5 @@
--- +migrate Up
-CREATE TABLE users
+-- +goose Up
+CREATE TABLE IF NOT EXISTS users
 (
     id         SERIAL PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
@@ -10,5 +10,5 @@ CREATE TABLE users
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- +migrate Down
+-- +goose Down
 DROP TABLE IF EXISTS users;

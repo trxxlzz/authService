@@ -17,12 +17,7 @@ type Config struct {
 }
 
 // LoadConfig загружает конфиг из .env файла и переменных окружения
-func LoadConfig() (*Config, error) {
-	envFile := ".env"
-	if os.Getenv("APP_ENV") == "prod" {
-		envFile = ".env.prod"
-	}
-
+func LoadConfig(envFile string) (*Config, error) {
 	if err := godotenv.Load(envFile); err != nil {
 		return nil, fmt.Errorf("error loading env file %s: %v", envFile, err)
 	}

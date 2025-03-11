@@ -1,0 +1,30 @@
+name: "Run Goose Migrations"
+
+on:
+  push:
+    branches:
+      - master  # Или твоя ветка
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: CLone repository
+        uses: actions/checkout@v4
+
+      - name: Download goose
+        run: |
+          curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o goose
+          chmod +x goose
+          sudo mv goose /usr/local/bin/
+
+      - name: Apply migrations
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: |
+          goose -dir=migrations postgres "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" up
