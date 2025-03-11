@@ -13,6 +13,9 @@ jobs:
       - name: CLone repository
         uses: actions/checkout@v4
 
+      - name: Remove old goose (если он есть)
+        run: rm -f goose || true
+
       - name: Download goose
         run: |
           curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o goose
