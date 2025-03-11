@@ -14,26 +14,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Remove old goose (если он есть)
-        run: rm -f goose || true
+        run: rm -f /usr/local/bin/goose || true
 
       - name: Download goose
         run: |
-          curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o goose
-          chmod +x goose
-          ls -lah goose  # Проверка, скачался ли бинарник
-
-      - name: Add goose to PATH
-        run: |
-          echo "$(pwd)" >> $GITHUB_PATH
-          echo "Добавили $(pwd) в PATH"
-
-      - name: Check if goose works
-        run: goose -h || echo "Goose не найден или не работает!"
+          curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o /usr/local/bin/goose
+          chmod +x /usr/local/bin/goose
+          ls -lah /usr/local/bin/goose  # Проверка, скачался ли бинарник
 
       - name: Проверяем скачался ли goose
         run: |
-          ls -lah
-          file goose
+          ls -lah /usr/local/bin/goose
+          file /usr/local/bin/goose
           which goose || echo "goose не найден!"
           goose -version || echo "goose не запускается!"
 
@@ -46,3 +38,4 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
         run: |
           goose -dir=migrations postgres "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" up
+
