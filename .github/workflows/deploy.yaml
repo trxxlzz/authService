@@ -16,7 +16,7 @@ jobs:
       - name: Устанавливаем Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'  # Можно поменять на актуальную версию
+          go-version: '1.21'  # Можно поменять на актуальную верси
 
       - name: Скачиваем и собираем goose
         run: |
