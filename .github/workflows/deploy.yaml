@@ -20,6 +20,10 @@ jobs:
         run: |
           curl -L https://github.com/pressly/goose/releases/download/v3.14.0/goose-linux-amd64 -o goose
           chmod +x goose
+          ls -lah goose  # Проверка, скачался ли бинарник
+
+      - name: Check if goose works
+        run: ./goose -h || echo "Goose не найден или не работает!"
 
       - name: Проверяем скачался ли goose
         run: |
