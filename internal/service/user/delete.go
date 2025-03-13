@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+
 	"github.com/golang/protobuf/ptypes/empty"
 )
 

@@ -1,17 +1,18 @@
 package user
 
 import (
+	"context"
+	"database/sql"
+
+	"github.com/Masterminds/squirrel"
+	"github.com/golang/protobuf/ptypes/empty"
+	//"github.com/golang/protobuf/ptypes/empty"
+	"github.com/jackc/pgx/v4/pgxpool"
+
 	"authService/internal/model"
 	"authService/internal/repository"
 	convert "authService/internal/repository/user/converter"
 	"authService/internal/repository/user/models"
-	"context"
-	"database/sql"
-	"github.com/Masterminds/squirrel"
-	"github.com/golang/protobuf/ptypes/empty"
-
-	//"github.com/golang/protobuf/ptypes/empty"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 var psql = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
