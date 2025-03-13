@@ -1,9 +1,10 @@
 package user
 
 import (
+	"context"
+
 	"authService/internal/converter"
 	pb "authService/pkg/protos/gen/go"
-	"context"
 )
 
 func (i *Implementation) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {

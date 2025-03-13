@@ -1,11 +1,12 @@
 package user
 
 import (
-	"authService/internal/converter"
-	pb "authService/pkg/protos/gen/go"
 	"context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"authService/internal/converter"
+	pb "authService/pkg/protos/gen/go"
 )
 
 func (i *Implementation) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {

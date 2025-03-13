@@ -1,9 +1,11 @@
 package user
 
 import (
-	pb "authService/pkg/protos/gen/go"
 	"context"
+
 	"github.com/golang/protobuf/ptypes/empty"
+
+	pb "authService/pkg/protos/gen/go"
 )
 
 func (i *Implementation) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*empty.Empty, error) {

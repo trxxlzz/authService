@@ -1,8 +1,9 @@
 package user
 
 import (
-	"authService/internal/model"
 	"context"
+
+	"authService/internal/model"
 )
 
 func (s *serv) CreateUser(ctx context.Context, user *model.User) (int64, error) {
