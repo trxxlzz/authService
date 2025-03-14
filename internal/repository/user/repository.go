@@ -6,9 +6,8 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/golang/protobuf/ptypes/empty"
-	//"github.com/golang/protobuf/ptypes/empty"
-	"github.com/jackc/pgx/v4/pgxpool"
 
+	"authService/internal/client/db"
 	"authService/internal/model"
 	"authService/internal/repository"
 	convert "authService/internal/repository/user/converter"
@@ -18,21 +17,21 @@ import (
 var psql = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
 
 type repo struct {
-	DB *pgxpool.Pool
+	DB db.Client
 }
 
-func NewRepository(db *pgxpool.Pool) repository.UserRepository {
+func NewRepository(db db.Client) repository.UserRepository {
 	return &repo{DB: db}
 }
 
 func (r *repo) CreateUser(ctx context.Context, user *model.User) (int64, error) {
 	// Конвертируем строковое значение роли в целое число
-	roleInt := convert.ConvertUserRoleToInt(user.Role)
+	//roleInt := convert.ConvertUserRoleToInt(user.Role)
 
 	query := psql.
 		Insert("users").
 		Columns("name", "email", "password", "role", "created_at").
-		Values(user.Name, user.Email, user.Password, roleInt, "NOW()").
+		Values(user.Name, user.Email, user.Password, user.Role, "NOW()").
 		Suffix("RETURNING id")
 
 	sqlStr, args, err := query.ToSql()
@@ -40,8 +39,13 @@ func (r *repo) CreateUser(ctx context.Context, user *model.User) (int64, error) 
 		return 0, err
 	}
 
+	q := db.Query{
+		Name:     "user_repository.Create",
+		QueryRaw: sqlStr,
+	}
+
 	var userID int64
-	err = r.DB.QueryRow(ctx, sqlStr, args...).Scan(&userID)
+	err = r.DB.QueryRowContext(ctx, q, args...).Scan(&userID)
 	if err != nil {
 		return 0, err
 	}
@@ -60,11 +64,13 @@ func (r *repo) GetUser(ctx context.Context, userID int64) (*model.User, error) {
 		return nil, err
 	}
 
-	row := r.DB.QueryRow(ctx, sqlStr, args...)
+	q := db.Query{
+		Name:     "user_repository.GetUser",
+		QueryRaw: sqlStr,
+	}
 
 	var user models.User
-	var role int
-	err = row.Scan(&user.ID, &user.Name, &user.Email, &role, &user.CreatedAt, &user.UpdatedAt)
+	err = r.DB.ScanOneContext(ctx, &user, q, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -86,7 +92,12 @@ func (r *repo) UpdateUser(ctx context.Context, id int64, name string, email stri
 		return nil, err
 	}
 
-	_, err = r.DB.Exec(ctx, sqlStr, args...)
+	q := db.Query{
+		Name:     "user_repository.UpdateUser",
+		QueryRaw: sqlStr,
+	}
+
+	_, err = r.DB.ExecContext(ctx, q, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +114,12 @@ func (r *repo) DeleteUser(ctx context.Context, id int64) (*empty.Empty, error) {
 		return nil, err
 	}
 
-	_, err = r.DB.Exec(ctx, sqlStr, args...)
+	q := db.Query{
+		Name:     "user_repository.DeleteUser",
+		QueryRaw: sqlStr,
+	}
+
+	_, err = r.DB.ExecContext(ctx, q, args...)
 	if err != nil {
 		return nil, err
 	}

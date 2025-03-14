@@ -43,16 +43,16 @@ func ConvertUserRole(role model.UserRole) pb.UserRole {
 	}
 }
 
-func convertUserRole(role pb.UserRole) model.UserRole {
-	switch role {
-	case pb.UserRole_USER_ROLE_USER:
-		return model.UserRoleUser
-	case pb.UserRole_USER_ROLE_ADMIN:
-		return model.UserRoleAdmin
-	default:
-		return "" // или какая-то дефолтная роль, если не указано
-	}
-}
+//func convertUserRole(role pb.UserRole) model.UserRole {
+//	switch role {
+//	case pb.UserRole_USER_ROLE_USER:
+//		return model.UserRoleUser
+//	case pb.UserRole_USER_ROLE_ADMIN:
+//		return model.UserRoleAdmin
+//	default:
+//		return "" // или какая-то дефолтная роль, если не указано
+//	}
+//}
 
 // Конвертируем протобаф в models
 func ToUserFromAPI(user *pb.CreateUserRequest) *model.User {
@@ -60,6 +60,6 @@ func ToUserFromAPI(user *pb.CreateUserRequest) *model.User {
 		Name:     user.Name,
 		Email:    user.Email,
 		Password: user.Password,
-		Role:     convertUserRole(user.Role), // Нужно преобразовать UserRole из pb в model
+		Role:     model.UserRole(user.Role), // Нужно преобразовать UserRole из pb в model
 	}
 }

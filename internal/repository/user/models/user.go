@@ -2,7 +2,13 @@ package models
 
 import "time"
 
-type UserRole string
+type UserRole int
+
+const (
+	UserRoleUnspecified UserRole = 0
+	UserRoleUser        UserRole = 1
+	UserRoleAdmin       UserRole = 2
+)
 
 type User struct {
 	ID        int64     `db:"id"`
