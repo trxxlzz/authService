@@ -1,17 +1,20 @@
 package main
 
 import (
+	"context"
+	"google.golang.org/grpc"
+	"log"
+	"net"
+
+	_ "github.com/lib/pq"
+
 	userAPIPkg "authService/internal/api/user"
+	"authService/internal/client/db/pg"
 	"authService/internal/config"
 	"authService/internal/infra/postgres"
 	userRepoPkg "authService/internal/repository/user"
 	userServPkg "authService/internal/service/user"
 	pb "authService/pkg/protos/gen/go"
-	"context"
-	_ "github.com/lib/pq"
-	"google.golang.org/grpc"
-	"log"
-	"net"
 )
 
 func main() {
@@ -22,13 +25,15 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	db, err := postgres.NewDBConnection(ctx, cfg.DSN())
+	dbpool, err := postgres.NewDBConnection(ctx, cfg.DSN())
 	if err != nil {
 		log.Fatal("Failed to connect to DB:", err)
 	}
-	defer db.Close()
+	defer dbpool.Close()
 
 	log.Println("Successfully connected to database")
+
+	db := pg.NewDB(dbpool)
 
 	userRepo := userRepoPkg.NewRepository(db)
 	userServ := userServPkg.NewService(userRepo)

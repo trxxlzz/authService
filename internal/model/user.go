@@ -2,11 +2,12 @@ package model
 
 import "time"
 
-type UserRole string
+type UserRole int
 
 const (
-	UserRoleUser  UserRole = "USER"
-	UserRoleAdmin UserRole = "ADMIN"
+	UserRoleUnspecified UserRole = 0
+	UserRoleUser        UserRole = 1
+	UserRoleAdmin       UserRole = 2
 )
 
 type User struct {
