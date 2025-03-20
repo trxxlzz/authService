@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"authService/internal/converter"
+	"authService/internal/mapper"
 	pb "authService/pkg/protos/gen/go"
 )
 
@@ -14,5 +14,5 @@ func (i *Implementation) GetUser(ctx context.Context, req *pb.GetUserRequest) (*
 		return nil, err
 	}
 
-	return converter.ToUserFromService(user), nil
+	return mapper.ToUserFromService(user), nil
 }

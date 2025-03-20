@@ -1,4 +1,4 @@
-package converter
+package mapper
 
 import (
 	"authService/internal/model"
@@ -42,17 +42,6 @@ func ConvertUserRole(role model.UserRole) pb.UserRole {
 		return pb.UserRole_USER_ROLE_UNSPECIFIED // если значение неизвестно
 	}
 }
-
-//func convertUserRole(role pb.UserRole) model.UserRole {
-//	switch role {
-//	case pb.UserRole_USER_ROLE_USER:
-//		return model.UserRoleUser
-//	case pb.UserRole_USER_ROLE_ADMIN:
-//		return model.UserRoleAdmin
-//	default:
-//		return "" // или какая-то дефолтная роль, если не указано
-//	}
-//}
 
 // Конвертируем протобаф в models
 func ToUserFromAPI(user *pb.CreateUserRequest) *model.User {

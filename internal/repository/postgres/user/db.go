@@ -1,6 +1,7 @@
 package user
 
 import (
+	"authService/internal/repository"
 	"context"
 	"database/sql"
 
@@ -9,9 +10,6 @@ import (
 
 	"authService/internal/client/db"
 	"authService/internal/model"
-	"authService/internal/repository"
-	convert "authService/internal/repository/user/converter"
-	"authService/internal/repository/user/models"
 )
 
 var psql = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
@@ -25,9 +23,6 @@ func NewRepository(db db.Client) repository.UserRepository {
 }
 
 func (r *repo) CreateUser(ctx context.Context, user *model.User) (int64, error) {
-	// Конвертируем строковое значение роли в целое число
-	//roleInt := convert.ConvertUserRoleToInt(user.Role)
-
 	query := psql.
 		Insert("users").
 		Columns("name", "email", "password", "role", "created_at").
@@ -55,7 +50,7 @@ func (r *repo) CreateUser(ctx context.Context, user *model.User) (int64, error) 
 
 func (r *repo) GetUser(ctx context.Context, userID int64) (*model.User, error) {
 	query := psql.
-		Select("id", "name", "email", "role", "created_at", "updated_at").
+		Select("*").
 		From("users").
 		Where(squirrel.Eq{"id": userID})
 
@@ -69,7 +64,7 @@ func (r *repo) GetUser(ctx context.Context, userID int64) (*model.User, error) {
 		QueryRaw: sqlStr,
 	}
 
-	var user models.User
+	var user User
 	err = r.DB.ScanOneContext(ctx, &user, q, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -78,7 +73,7 @@ func (r *repo) GetUser(ctx context.Context, userID int64) (*model.User, error) {
 		return nil, err
 	}
 
-	return convert.ToUserFromRepo(&user), nil
+	return ToUserFromRepo(&user), nil
 }
 
 func (r *repo) UpdateUser(ctx context.Context, id int64, name string, email string) (*empty.Empty, error) {
