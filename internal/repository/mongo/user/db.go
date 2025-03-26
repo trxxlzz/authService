@@ -5,10 +5,9 @@ import (
 	"authService/internal/repository"
 	"context"
 	"errors"
-	"github.com/golang/protobuf/ptypes/empty"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"time"
 )
 
@@ -58,7 +57,7 @@ func (r *mongoRepo) GetUser(ctx context.Context, userID int64) (*model.User, err
 }
 
 // UpdateUser - обновление данных пользователя
-func (r *mongoRepo) UpdateUser(ctx context.Context, id int64, name string, email string) (*empty.Empty, error) {
+func (r *mongoRepo) UpdateUser(ctx context.Context, id int64, name string, email string) error {
 	// Обновляем пользователя по числовому ID
 	result, err := r.collection.UpdateOne(
 		ctx,
@@ -70,27 +69,27 @@ func (r *mongoRepo) UpdateUser(ctx context.Context, id int64, name string, email
 		}},
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Проверяем, найден ли пользователь
 	if result.MatchedCount == 0 {
-		return nil, errors.New("user not found")
+		return errors.New("user not found")
 	}
 
-	return &emptypb.Empty{}, nil
+	return nil
 }
 
 // DeleteUser - удаление пользователя
-func (r *mongoRepo) DeleteUser(ctx context.Context, userID int64) (*empty.Empty, error) {
+func (r *mongoRepo) DeleteUser(ctx context.Context, userID int64) error {
 	result, err := r.collection.DeleteOne(ctx, bson.M{"id": userID})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if result.DeletedCount == 0 {
-		return nil, errors.New("user not found")
+		return errors.New("user not found")
 	}
 
-	return &emptypb.Empty{}, nil
+	return nil
 }

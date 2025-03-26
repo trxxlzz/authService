@@ -30,6 +30,11 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
+
+	// Redis
+	RedisHost     string
+	RedisPort     string
+	RedisPassword string
 }
 
 // LoadConfig загружает конфиг из .env файла и переменных окружения
@@ -39,17 +44,20 @@ func LoadConfig(envFile string, dbType DBType) (*Config, error) {
 	}
 
 	config := &Config{
-		AppEnv:     os.Getenv("APP_ENV"),
-		MongoHost:  os.Getenv("MONGO_HOST"),
-		MongoPort:  os.Getenv("MONGO_PORT"),
-		MongoUser:  os.Getenv("MONGO_USER"),
-		MongoPass:  os.Getenv("MONGO_PASSWORD"),
-		MongoDB:    os.Getenv("MONGO_DB"),
-		DBHost:     os.Getenv("DB_HOST"),
-		DBPort:     os.Getenv("DB_PORT"),
-		DBUser:     os.Getenv("DB_USER"),
-		DBPassword: os.Getenv("DB_PASSWORD"),
-		DBName:     os.Getenv("DB_NAME"),
+		AppEnv:        os.Getenv("APP_ENV"),
+		MongoHost:     os.Getenv("MONGO_HOST"),
+		MongoPort:     os.Getenv("MONGO_PORT"),
+		MongoUser:     os.Getenv("MONGO_USER"),
+		MongoPass:     os.Getenv("MONGO_PASSWORD"),
+		MongoDB:       os.Getenv("MONGO_DB"),
+		DBHost:        os.Getenv("DB_HOST"),
+		DBPort:        os.Getenv("DB_PORT"),
+		DBUser:        os.Getenv("DB_USER"),
+		DBPassword:    os.Getenv("DB_PASSWORD"),
+		DBName:        os.Getenv("DB_NAME"),
+		RedisHost:     os.Getenv("REDIS_HOST"),
+		RedisPort:     os.Getenv("REDIS_PORT"),
+		RedisPassword: os.Getenv("REDIS_PASSWORD"),
 	}
 
 	if err := config.validate(dbType); err != nil {
@@ -117,4 +125,9 @@ func (c *Config) DSN(dbType DBType) string {
 	default:
 		return ""
 	}
+}
+
+// RedisAddr возвращает строку подключения к Redis
+func (c *Config) RedisAddr() string {
+	return fmt.Sprintf("%s:%s", c.RedisHost, c.RedisPort)
 }

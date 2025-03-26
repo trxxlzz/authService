@@ -2,15 +2,13 @@ package user
 
 import (
 	"context"
-
-	"github.com/golang/protobuf/ptypes/empty"
 )
 
-func (s *serv) DeleteUser(ctx context.Context, id int64) (*empty.Empty, error) {
-	_, err := s.userRepository.DeleteUser(ctx, id)
+func (s *serv) DeleteUser(ctx context.Context, id int64) error {
+	err := s.userRepository.DeleteUser(ctx, id)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &empty.Empty{}, nil
+	return nil
 }

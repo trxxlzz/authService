@@ -5,7 +5,9 @@ import (
 	"authService/internal/config"
 	"authService/internal/infra/postgres"
 	userRepoPkg "authService/internal/repository/postgres/user"
+
 	//mongoRepoPkg "authService/internal/repository/mongo/user"
+	redisInfra "authService/internal/infra/redis"
 	userServPkg "authService/internal/service/user"
 	"context"
 	_ "github.com/lib/pq"
@@ -51,10 +53,19 @@ func main() {
 
 	log.Println("Successfully connected to database")
 
+	// Подключаемся к Redis
+	redisClient, err := redisInfra.NewRedisClient(ctx, cfg.RedisHost, cfg.RedisPort, cfg.RedisPassword, 0)
+	if err != nil {
+		log.Fatalf("Ошибка подключения к Redis: %v", err)
+	}
+	defer redisClient.Close()
+
+	log.Println("Successfully connected to Redis")
+
 	//Инжектим для PostgreSQL
 	db := pg.NewDB(dbpool)
 
-	userRepo := userRepoPkg.NewRepository(db)
+	userRepo := userRepoPkg.NewRepository(db, redisClient)
 	userServ := userServPkg.NewService(userRepo)
 
 	////Инжектим для mongoDB
