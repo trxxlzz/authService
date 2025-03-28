@@ -1,6 +1,7 @@
 package main
 
 import (
+	cache2 "authService/internal/cache"
 	"authService/internal/client/db/pg"
 	"authService/internal/config"
 	"authService/internal/infra/postgres"
@@ -62,11 +63,12 @@ func main() {
 
 	log.Println("Successfully connected to Redis")
 
-	//Инжектим для PostgreSQL
+	//Создвем кэш и инжектим для PostgreSQL
+	cache := cache2.NewRedisCache(redisClient)
 	db := pg.NewDB(dbpool)
 
-	userRepo := userRepoPkg.NewRepository(db, redisClient)
-	userServ := userServPkg.NewService(userRepo)
+	userRepo := userRepoPkg.NewRepository(db)
+	userServ := userServPkg.NewService(userRepo, cache)
 
 	////Инжектим для mongoDB
 	//userRepo := mongoRepoPkg.NewMongoRepository(client, cfg.MongoDB, "users")
