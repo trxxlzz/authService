@@ -12,10 +12,10 @@ const (
 
 type User struct {
 	ID        int64
-	Name      string
+	Name      string `json:"name"`
 	Email     string
 	Password  string
-	Role      UserRole
+	Role      UserRole `json:"role"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

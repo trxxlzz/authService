@@ -1,14 +1,22 @@
+version: "3"
+
 volumes:
-  postgres_volume:
+  prometheus_data:
+  grafana_data:
 
 services:
-  pg:
-    image: postgres:14-alpine3.17
-    environment:
-      - "POSTGRES_DB=${DB_NAME}"
-      - "POSTGRES_USER=${DB_USER}"
-      - "POSTGRES_PASSWORD=${DB_PASSWORD}"
+  prometheus:
+    image: prom/prometheus:v2.37.9
     ports:
-      - "${DB_PORT}:5432"
+      - "9090:9090"
     volumes:
-      - postgres_volume:/var/lib/postgresql/data
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alerts.yml:/etc/prometheus/alerts.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana-oss:10.0.3
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
