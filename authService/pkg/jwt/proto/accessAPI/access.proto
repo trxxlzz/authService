@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package access;
+
+option go_package = "microservices/authService/pkg/jwt/gen/go/access;access";
+
+import "google/protobuf/empty.proto";
+
+service AccessApi {
+  rpc Check (CheckRequest) returns (google.protobuf.Empty);
+}
+
+message CheckRequest {
+  string endpoint_address = 1;
+}

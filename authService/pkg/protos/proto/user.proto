@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "go/go";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+//import "vendor.protogen/google/api/annotations.proto";
+//import "vendor.protogen/validate/validate.proto";
+
+service UserApi {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+//    option (google.api.http) = {
+//      post: "/user/v1/create"
+//      body: "*"
+//    };
+//  }
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+//    option (google.api.http) = {
+//      get: "/user/v1"
+//    };
+//  }
+  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty);
+//    option (google.api.http) = {
+//      patch: "/user/v1"
+//      body: "*"
+//    };
+//  }
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+//    option (google.api.http) = {
+//      delete: "user/v1"
+//    };
+//  }
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+  string password_confirm = 4;
+  UserRole role = 5;
+}
+
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_USER = 1;
+  USER_ROLE_ADMIN = 2;
+}
+
+message CreateUserResponse {
+  int64 id = 1;
+}
+
+message GetUserRequest {
+  int64 id = 1;
+}
+
+message GetUserResponse {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  UserRole role = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message UpdateUserRequest {
+  int64 id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue email = 3;
+}
+
+message DeleteUserRequest {
+  int64 id = 1;
+}
