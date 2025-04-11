@@ -12,8 +12,9 @@ import (
 type UserService interface {
 	CreateUser(ctx context.Context, user *model.User) (int64, error)
 	GetUser(ctx context.Context, userID int64) (*model.User, error)
-	UpdateUser(ctx context.Context, id int64, name string, email string) error
-	DeleteUser(ctx context.Context, id int64) error
+	UpdateUser(ctx context.Context, userID int64, name string, email string) error
+	DeleteUser(ctx context.Context, userID int64) error
+	UpdateUserRole(ctx context.Context, userID int64, role *model.User) error
 }
 
 type AuthService interface {

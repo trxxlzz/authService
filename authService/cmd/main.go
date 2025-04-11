@@ -10,6 +10,7 @@ import (
 	"microservices/authService/internal/config"
 	"microservices/authService/internal/infra/postgres"
 	redisInfra "microservices/authService/internal/infra/redis"
+	"microservices/authService/internal/kafka"
 	"microservices/authService/pkg/jwt/gen/go/access"
 
 	"microservices/authService/internal/metric"
@@ -79,6 +80,23 @@ func main() {
 
 	userRepo := userRepoPkg.NewUserRepository(db)
 	userServ := userServPkg.NewUserService(userRepo, cache)
+
+	kafkaConsumer := kafka.NewConsumer(
+		cfg.KafkaBrokersList(), // []string{"localhost:9092"}
+		cfg.KafkaTopic,         // "user-role-updates"
+		userServ,
+	)
+
+	//Запуск Kafka Consumer в отдельной горутине
+	//ctx, cancel := context.WithCancel(context.Background())
+	//defer cancel()
+
+	go func() {
+		log.Println("Starting Kafka consumer...")
+		if err := kafkaConsumer.Run(ctx); err != nil {
+			log.Fatalf("Kafka consumer failed: %v", err)
+		}
+	}()
 
 	authRepo := authRepoPkg.NewAuthRepository(db)
 	authServ := authServPkg.NewAuthService(authRepo)

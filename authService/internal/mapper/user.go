@@ -1,10 +1,14 @@
 package mapper
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/segmentio/kafka-go"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"microservices/authService/internal/model"
 	auth "microservices/authService/pkg/jwt/gen/go/auth"
 	pb "microservices/authService/pkg/protos/gen/go"
+	"strconv"
 	"time"
 )
 
@@ -58,4 +62,32 @@ func ToUserFromAPI(user *pb.CreateUserRequest) *model.User {
 		Password: user.Password,
 		Role:     model.UserRole(user.Role), // Нужно преобразовать UserRole из pb в model
 	}
+}
+
+func ToUserFromKafka(message *kafka.Message) (int64, *model.User, error) {
+	var kafkaMsg struct {
+		UserID string `json:"user_id"`
+		Role   int    `json:"role"`
+	}
+
+	if err := json.Unmarshal(message.Value, &kafkaMsg); err != nil {
+		return 0, nil, fmt.Errorf("unmarshal error: %w", err)
+	}
+
+	// Конвертируем string UserID в int64
+	id, err := strconv.ParseInt(kafkaMsg.UserID, 10, 64)
+	if err != nil {
+		return 0, nil, fmt.Errorf("invalid user ID format: %w", err)
+	}
+
+	userRole := model.UserRole(kafkaMsg.Role)
+
+	// Создаем объект User с обновленной ролью
+	user := &model.User{
+		ID:        id,
+		Role:      userRole,
+		UpdatedAt: time.Now(), // Устанавливаем текущее время обновления
+	}
+
+	return id, user, nil
 }

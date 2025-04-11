@@ -135,3 +135,22 @@ func (r *userRepo) DeleteUser(ctx context.Context, id int64) error {
 
 	return nil
 }
+
+func (r *userRepo) UpdateUserRole(ctx context.Context, id int64, user *model.User) error {
+	updateQuery := Psql.Update("users").
+		Set("role", user.Role).
+		Where(squirrel.Eq{"id": id})
+
+	sqlStr, args, err := updateQuery.ToSql()
+	if err != nil {
+		return err
+	}
+
+	q := db.Query{
+		Name:     "user_repository.UpdateUserRole",
+		QueryRaw: sqlStr,
+	}
+
+	_, err = r.DB.ExecContext(ctx, q, args...)
+	return err
+}

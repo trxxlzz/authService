@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -35,6 +36,10 @@ type Config struct {
 	RedisHost     string
 	RedisPort     string
 	RedisPassword string
+
+	// Kafka
+	KafkaBrokers string
+	KafkaTopic   string
 }
 
 // LoadConfig загружает конфиг из .env файла и переменных окружения
@@ -58,6 +63,8 @@ func LoadConfig(envFile string, dbType DBType) (*Config, error) {
 		RedisHost:     os.Getenv("REDIS_HOST"),
 		RedisPort:     os.Getenv("REDIS_PORT"),
 		RedisPassword: os.Getenv("REDIS_PASSWORD"),
+		KafkaBrokers:  os.Getenv("KAFKA_BROKERS"),
+		KafkaTopic:    os.Getenv("KAFKA_TOPIC"),
 	}
 
 	if err := config.validate(dbType); err != nil {
@@ -70,6 +77,13 @@ func LoadConfig(envFile string, dbType DBType) (*Config, error) {
 // validate проверяет, что все обязательные поля заполнены
 func (c *Config) validate(dbType DBType) error {
 	missingFields := []string{}
+
+	if c.KafkaBrokers == "" {
+		missingFields = append(missingFields, "KAFKA_BROKERS")
+	}
+	if c.KafkaTopic == "" {
+		missingFields = append(missingFields, "KAFKA_TOPIC")
+	}
 
 	switch dbType {
 	case MongoDB:
@@ -130,4 +144,9 @@ func (c *Config) DSN(dbType DBType) string {
 // RedisAddr возвращает строку подключения к Redis
 func (c *Config) RedisAddr() string {
 	return fmt.Sprintf("%s:%s", c.RedisHost, c.RedisPort)
+}
+
+// KafkaBrokersList возвращает список брокеров Kafka как []string
+func (c *Config) KafkaBrokersList() []string {
+	return strings.Split(c.KafkaBrokers, ",")
 }

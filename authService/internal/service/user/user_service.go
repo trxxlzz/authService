@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"microservices/authService/internal/model"
@@ -88,6 +89,21 @@ func (s *userApi) DeleteUser(ctx context.Context, id int64) error {
 	// Удаляем кэш
 	cacheKey := fmt.Sprintf("user:%d", id)
 	_ = s.cache.Delete(ctx, cacheKey)
+
+	return nil
+}
+
+func (s *userApi) UpdateUserRole(ctx context.Context, id int64, role *model.User) error {
+	// Обновляем роль в БД
+	if err := s.userRepository.UpdateUserRole(ctx, id, role); err != nil {
+		return fmt.Errorf("DB update failed: %w", err)
+	}
+
+	// Инвалидируем кэш
+	cacheKey := fmt.Sprintf("user:%d", id)
+	if err := s.cache.Delete(ctx, cacheKey); err != nil {
+		log.Printf("Failed to invalidate cache for user %d: %v", id, err)
+	}
 
 	return nil
 }
